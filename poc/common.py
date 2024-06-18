@@ -68,18 +68,18 @@ def run_node_command(server, project, node, command):
             session.write(line.encode())
             session.write(b'\r\n')
 
-def link_nodes(server, project, node1, node2):
+def link_nodes(server, project, node1, node1_int, node2, node2_int):
     project_id = project["project_id"]
     return requests.post(f"{server}/projects/{project_id}/links", json={
         "nodes": [
             {
                 "adapter_number": 0,
-                "port_number": 0,
+                "port_number": node1_int,
                 "node_id": node1["node_id"],
             },
             {
                 "adapter_number": 0,
-                "port_number": 0,
+                "port_number": node2_int,
                 "node_id": node2["node_id"],
             }
         ]
