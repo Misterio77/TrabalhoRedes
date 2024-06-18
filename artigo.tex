@@ -45,7 +45,7 @@
 \maketitle
 
 \begin{resumo}
-    TODO
+    O uso de Infrastructure-as-code (IaC) na indústria é crescente, e suas vantagens no processo de desenvolvimento de infraestruturas são frequentemente citadas como um pilar do desenvolvimento em cloud moderno. Esse trabalho busca entender o atual interesse e uso de ferramentas as-code no ensino de computação, e o desenvolvimento de uma prova de conceito em cima de uma ferramenta real.
 \end{resumo}
 
 \section{Introdução}
@@ -92,6 +92,12 @@ Mininet\cite{mininet} e o GNS3\cite{gns3api}.
 
 
 \subsection{Prova de Conceito}
+
+Com base na literatura e na experiência do autor, optamos por utilizar o
+GNS3\cite{gns3api}. Essa ferramenta livre é similar a outros simuladores de
+rede, mas com os diferenciais de ser facilmente hospedável para múltiplos
+usuários, e contando com uma API moderna, facilmente acessível via web. Com
+ela, podemos construir uma abstração declarativa.
 
 Para validar a viabilidade de interagir programaticamente com o GNS3, montamos
 uma prova de conceito (PoC). Essa implementação é um código simples em Python,
