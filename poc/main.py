@@ -18,7 +18,7 @@ router1 = get_node(SERVER, project, "R1", {
         "slot2": "NM-4T",
         "system_id": "FTX0945W0MY",
         "startup_config_content": """
-            hostname irineuuuu
+            hostname ciclano
         """,
     }
 }, destroy=True)
@@ -38,7 +38,7 @@ router2 = get_node(SERVER, project, "R2", {
         "slot2": "NM-4T",
         "system_id": "FTX0945W0MY",
         "startup_config_content": """
-            hostname douglassss
+            hostname fulano
         """,
     }
 }, destroy=True)
