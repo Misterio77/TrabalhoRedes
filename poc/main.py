@@ -18,8 +18,6 @@ router0 = get_node(SERVER, project, "R0", {
         "slot2": "NM-4T",
         "system_id": "FTX0945W0MY",
         "startup_config_content": """
-            enable
-            configure terminal
             ipv6 unicast-routing
             ipv6 router ospf 1
                 router-id 10.0.0.0
@@ -38,24 +36,10 @@ router0 = get_node(SERVER, project, "R0", {
                 ipv6 address 2001:0:2::1/64
                 no shutdown
             exit
-            exit
-            exit
         """,
     }
 }, destroy=True)
 start_node(SERVER, project, router0)
-run_node_command(SERVER, project, router0, """
-    enable
-    conf t
-    interface fastethernet 0/0
-        no shutdown
-    exit
-    interface fastethernet 0/1
-        no shutdown
-    exit
-    exit
-    exit
-""")
 
 router1 = get_node(SERVER, project, "R1", {
     "compute_id": "local",
@@ -71,8 +55,6 @@ router1 = get_node(SERVER, project, "R1", {
         "slot2": "NM-4T",
         "system_id": "FTX0945W0MY",
         "startup_config_content": """
-            enable
-            configure terminal
             ipv6 unicast-routing
             ipv6 router ospf 1
                 router-id 10.0.0.1
@@ -91,25 +73,10 @@ router1 = get_node(SERVER, project, "R1", {
                 ipv6 address 2001:1:1::1/64
                 no shutdown
             exit
-
-            exit
-            exit
         """,
     }
 }, destroy=True)
 start_node(SERVER, project, router1)
-run_node_command(SERVER, project, router1, """
-    enable
-    conf t
-    interface fastethernet 0/0
-        no shutdown
-    exit
-    interface fastethernet 0/1
-        no shutdown
-    exit
-    exit
-    exit
-""")
 
 router2 = get_node(SERVER, project, "R2", {
     "compute_id": "local",
@@ -125,8 +92,6 @@ router2 = get_node(SERVER, project, "R2", {
         "slot2": "NM-4T",
         "system_id": "FTX0945W0MY",
         "startup_config_content": """
-            enable
-            configure terminal
             ipv6 unicast-routing
             ipv6 router ospf 1
                 router-id 10.0.0.2
@@ -147,25 +112,10 @@ router2 = get_node(SERVER, project, "R2", {
                 ipv6 address 2001:2:1::1/64
                 no shutdown
             exit
-
-            exit
-            exit
         """,
     }
 }, destroy=True)
 start_node(SERVER, project, router2)
-run_node_command(SERVER, project, router2, """
-    enable
-    conf t
-    interface fastethernet 0/0
-        no shutdown
-    exit
-    interface fastethernet 0/1
-        no shutdown
-    exit
-    exit
-    exit
-""")
 
 link_nodes(SERVER, project, router0, 0, router1, 0)
 link_nodes(SERVER, project, router0, 1, router2, 0)
@@ -180,7 +130,7 @@ alpine1 = get_node(SERVER, project, "alpine-linux-docker1", {
         "image": "alpine",
         "console_type": "telnet",
     }
-})
+}, destroy=True)
 start_node(SERVER, project, alpine1)
 link_nodes(SERVER, project, router1, 1, alpine1, 0)
 
@@ -193,6 +143,43 @@ alpine2 = get_node(SERVER, project, "alpine-linux-docker2", {
         "image": "alpine",
         "console_type": "telnet",
     }
-})
+}, destroy=True)
 start_node(SERVER, project, alpine2)
 link_nodes(SERVER, project, router2, 1, alpine2, 0)
+
+run_node_command(SERVER, project, router0, """
+    enable
+        configure terminal
+            interface fastethernet 0/0
+                no shutdown
+            exit
+            interface fastethernet 0/1
+                no shutdown
+            exit
+        exit
+    exit
+""")
+run_node_command(SERVER, project, router1, """
+    enable
+        configure terminal
+            interface fastethernet 0/0
+                no shutdown
+            exit
+            interface fastethernet 0/1
+                no shutdown
+            exit
+        exit
+    exit
+""")
+run_node_command(SERVER, project, router2, """
+    enable
+        configure terminal
+            interface fastethernet 0/0
+                no shutdown
+            exit
+            interface fastethernet 0/1
+                no shutdown
+            exit
+        exit
+    exit
+""")
