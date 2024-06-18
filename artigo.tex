@@ -2,18 +2,78 @@
 \usepackage{sbc-template}
 \usepackage[brazil]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
 
 \title{Ensino de redes com ferramentas "as-code"}
-\author{Gabriel S. Fontes\inst{1}}
+\author{Gabriel Silva Fontes\inst{1} \\ g.fontes@usp.br}
+
+\vbadness=10000
+\hbadness=10000
 
 \address{Instituto de Ciências Matemáticas e de Computação -- Universidade de São Paulo (ICMC/USP)}
 
 \begin{document}
 \maketitle
 
-\begin{abstract}
+\begin{resumo}
     TODO
-\end{abstract}
+\end{resumo}
+
+\section{Introdução}
+
+Com o crescente uso de nuvens computacionais, onde pode-se criar dispositivos
+de rede e infraestrutura programaticamente, há uma proliferação de diferentes
+ferramentas e abordagens para provisionar e gerenciar esses recursos.
+
+Andando lado-a-lado com metodologias que priorizam automação e
+reprodutibilidade, como DevOps, há o crescente uso de ferramentas de
+"Infrastructure as Code" (IaC), que permitem gerir recursos computacionais
+(redes, VMs, etc) por meio de código (seja ele declarativo ou imperativo),
+trazendo consigo os vários avanços da área de engenharia de software:
+versionamento, teste automático, etc.
+
+\section{Metodologia}
+
+TODO
+
+\subsection{Revisão da Literatura}
+
+Conduzi uma busca via Google Scholar com os seguintes termos
+
+\begin{itemize}
+    \item "Teaching Infrastructure as Code"
+    \item "Teaching Software Defined Networking"
+\end{itemize}
+
+TODO
+
+\subsection{Prova de Conceito}
+
+TODO
+
+\section{Resultados Preliminares}
+
+O uso do GNS3 como ferramenta de simulação e ensino parece bastante viável.
+Além de poder emular dispositivos cisco (via Dynamips), ele também suporta VMs,
+contêineres, e permite colaboração multiusuário (via sua arquitetura de
+cliente/servidor, que inclui até uma interface web).
+
+TODO
+
+\section{Trabalhos Futuros}
+
+Para ter o valor esperado, essa PoC deve ser validada, de forma sistemática,
+com alunos reais. Deve-se comparar a produtividade do ensino com ferramentas
+tradicionais, e montar questionários para levantar vantagens e desvantagens, na
+visão dos alunos.
+
+Para uma PoC mais madura, o autor propõe a implementaçao de um
+\textit{Terraform provider} para interagir com o GNS3; permitindo colher as
+vantagens de do Terraform (recursos declarativos, ótima usabilidade, etc).
+
+\section{Discussão}
+
+TODO
 
 \bibliographystyle{sbc}
 \bibliographystyle{references}
