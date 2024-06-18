@@ -1,0 +1,2 @@
+requests>=2.32
+# gns3-client==0.1
