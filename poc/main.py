@@ -1,4 +1,4 @@
-from common import get_node, get_project, start_node, run_node_command, link_nodes
+from common import get_node, get_project, start_node, run_node_command, link_nodes, create_node
 
 SERVER = f"https://admin:icmc1234@gns3.m7.rs/v2"
 
@@ -169,3 +169,30 @@ run_node_command(SERVER, project, router2, """
 
 link_nodes(SERVER, project, router0, 0, router1, 0)
 link_nodes(SERVER, project, router0, 1, router2, 0)
+
+
+alpine1 = get_node(SERVER, project, "alpine-linux-docker1", {
+    "compute_id": "local",
+    "node_type": "docker",
+    "x": -100,
+    "y": 100,
+    "properties": {
+        "image": "alpine",
+        "console_type": "telnet",
+    }
+})
+start_node(SERVER, project, alpine1)
+link_nodes(SERVER, project, router1, 1, alpine1, 0)
+
+alpine2 = get_node(SERVER, project, "alpine-linux-docker2", {
+    "compute_id": "local",
+    "node_type": "docker",
+    "x": 100,
+    "y": 100,
+    "properties": {
+        "image": "alpine",
+        "console_type": "telnet",
+    }
+})
+start_node(SERVER, project, alpine2)
+link_nodes(SERVER, project, router2, 1, alpine2, 0)
