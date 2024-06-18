@@ -3,6 +3,35 @@
 \usepackage[brazil]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{url}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
 
 \title{Ensino de redes com ferramentas "as-code"}
 \author{Gabriel Silva Fontes\inst{1} \\ g.fontes@usp.br}
@@ -32,9 +61,13 @@ reprodutibilidade, como DevOps, há o crescente uso de ferramentas de
 trazendo consigo os vários avanços da área de engenharia de software:
 versionamento, teste automático, etc.
 
+As aplicações no ensino de computação podem ser bastante relevantes,
+estimulando a colaboração e o reuso de soluções.
+
 \section{Metodologia}
 
-TODO
+Esse trabalho foi conduzido com uma revisão da literatura, e a implementação de
+uma PoC, ilustrando o modelo declarativo.
 
 \subsection{Revisão da Literatura}
 
@@ -45,11 +78,87 @@ Conduzi uma busca via Google Scholar com os seguintes termos
     \item "Teaching Software Defined Networking"
 \end{itemize}
 
-TODO
+A primeira string de busca não foi suficiente para encontrar muitos resultados
+relevantes, então resolvi usar Software-defined Networking (SDN) como um
+possível sinônimo. Apesar da diferença do propósito (normalmente SDN é usado
+para redes dinâmicas\cite{vsuh2017designing}), é possível aprender com o uso de
+SDN feito nesses outros trabalhos, e como essas ferramentas foram postas à
+prova no ensino.
+
+Salib et. al\cite{salib2018hands} já trabalharam no tópico do ensino de redes
+na graduação usando SDN. As ferramentas exploradas foram o
+Mininet\cite{mininet} e o GNS3\cite{gns3api}.
+
+
 
 \subsection{Prova de Conceito}
 
-TODO
+Para validar a viabilidade de interagir programaticamente com o GNS3, montamos
+uma prova de conceito (PoC). Essa implementação é um código simples em Python,
+que interage com o API do GNS3\cite{gns3api}.
+
+São expostas algumas funções que permitem gerir e configurar nós (e.g.
+roteadores). A implementação atual, apesar de declarativa, é rudimentar: é
+necessário destruir e recriar o nó a cada mudança, já que não há \textit{drift
+detection} implementado.
+
+Dito isso, é possível criar nós, e rodar comandos via telnet, de forma
+declarativa. Isso permite criar redes arbitrárias, que podem ser aplicadas com
+apenas um comando:
+
+\begin{lstlisting}[language=Python]
+project = get_project(SERVER, "pocpoc")
+
+router1 = get_node(SERVER, project, "R1", {
+    "compute_id": "local",
+    "node_type": "dynamips",
+    "x": 0,
+    "properties": {
+        "platform": "c3745",
+        "image": "c3745-adventerprisek9-mz.124-25d.image",
+        "nvram": 256,
+        "ram": 256, 
+        "slot0": "GT96100-FE",
+        "slot1": "NM-1FE-TX",
+        "slot2": "NM-4T",
+        "system_id": "FTX0945W0MY",
+        "startup_config_content": """
+            hostname ciclano
+        """,
+    }
+}, destroy=True)
+start_node(SERVER, project, router1)
+
+router2 = get_node(SERVER, project, "R2", {
+    "compute_id": "local",
+    "node_type": "dynamips",
+    "x": 100,
+    "properties": {
+        "platform": "c3745",
+        "image": "c3745-adventerprisek9-mz.124-25d.image",
+        "nvram": 256,
+        "ram": 256, 
+        "slot0": "GT96100-FE",
+        "slot1": "NM-1FE-TX",
+        "slot2": "NM-4T",
+        "system_id": "FTX0945W0MY",
+        "startup_config_content": """
+            hostname fulano
+        """,
+    }
+}, destroy=True)
+start_node(SERVER, project, router2)
+
+run_node_command(SERVER, project, router2, """
+    enable
+    conf t
+    hostname foobar
+    exit
+    exit
+""")
+
+link_nodes(SERVER, project, router1, router2)
+\end{lstlisting}
 
 \section{Resultados Preliminares}
 
@@ -58,7 +167,11 @@ Além de poder emular dispositivos cisco (via Dynamips), ele também suporta VMs
 contêineres, e permite colaboração multiusuário (via sua arquitetura de
 cliente/servidor, que inclui até uma interface web).
 
-TODO
+O API do GNS3 é extremamente poderoso, e permite implementar interfaces
+declarativas com certa facilidade. É possível criar templates (e.g.
+dispositivo), que permitem reuso de configuração. É possível executar comandos
+(via telnet), sendo, então, possível configurar qualquer topologia arbitrária
+via código.
 
 \section{Trabalhos Futuros}
 
@@ -67,15 +180,15 @@ com alunos reais. Deve-se comparar a produtividade do ensino com ferramentas
 tradicionais, e montar questionários para levantar vantagens e desvantagens, na
 visão dos alunos.
 
-Para uma PoC mais madura, o autor propõe a implementaçao de um
+O autor propõe um amadurecimento da PoC. Implementando um API ergonômico e,
+possivelmente, drift detection.
+
+Para uma PoC ainda mais madura, o autor propõe a implementaçao de um
 \textit{Terraform provider} para interagir com o GNS3; permitindo colher as
-vantagens de do Terraform (recursos declarativos, ótima usabilidade, etc).
+vantagens de do Terraform (recursos 100\% declarativos, ótima usabilidade,
+drift detection automático, etc).
 
-\section{Discussão}
-
-TODO
-
-\bibliographystyle{sbc}
-\bibliographystyle{references}
+\bibliographystyle{plain}
+\bibliography{references}
 
 \end{document}
