@@ -45,7 +45,12 @@
 \maketitle
 
 \begin{resumo}
-    O uso de Infrastructure-as-code (IaC) na indústria é crescente, e suas vantagens no processo de desenvolvimento de infraestruturas são frequentemente citadas como um pilar do desenvolvimento em cloud moderno. Esse trabalho busca entender o atual interesse e uso de ferramentas as-code no ensino de computação, e o desenvolvimento de uma prova de conceito em cima de uma ferramenta real.
+    O uso de Infrastructure-as-code (IaC) na indústria é crescente, e suas
+    vantagens no processo de desenvolvimento de infraestruturas são
+    frequentemente citadas como um pilar do desenvolvimento em cloud moderno.
+    Esse trabalho busca entender a atual intersecção entre IaC e ensino de
+    redes, os potenciais benefícios da abordagem, e desenvolver uma prova de
+    conceito em cima de uma ferramenta já usada para ensino.
 \end{resumo}
 
 \section{Introdução}
@@ -83,11 +88,13 @@ relevantes, então resolvi usar Software-defined Networking (SDN) como um
 possível sinônimo. Apesar da diferença do propósito (normalmente SDN é usado
 para redes dinâmicas\cite{vsuh2017designing}), é possível aprender com o uso de
 SDN feito nesses outros trabalhos, e como essas ferramentas foram postas à
-prova no ensino.
+prova no ensino\cite{salib2018hands}.
 
 Salib et. al\cite{salib2018hands} já trabalharam no tópico do ensino de redes
 na graduação usando SDN. As ferramentas exploradas foram o
 Mininet\cite{mininet} e o GNS3\cite{gns3api}.
+
+Soll et. al\cite{soll2023building} também trabalharam montando laboratórios de ensino com IaC.
 
 
 
@@ -97,7 +104,7 @@ Com base na literatura e na experiência do autor, optamos por utilizar o
 GNS3\cite{gns3api}. Essa ferramenta livre é similar a outros simuladores de
 rede, mas com os diferenciais de ser facilmente hospedável para múltiplos
 usuários, e contando com uma API moderna, facilmente acessível via web. Com
-ela, podemos construir uma abstração declarativa.
+ela, podemos construir uma abstração.
 
 Para validar a viabilidade de interagir programaticamente com o GNS3, montamos
 uma prova de conceito (PoC). Essa implementação é um código simples em Python,
