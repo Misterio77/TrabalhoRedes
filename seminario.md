@@ -1,6 +1,6 @@
 ---
 lang: pt_BR
-title: Ensino de redes com ferramentas "as-code"
+title: Ensino de redes com ferramentas "as-code" - Proposta
 subtitle: SCC5797 - Seminário
 author: Gabriel Fontes (10856803)
 documentclass: beamer

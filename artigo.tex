@@ -113,57 +113,49 @@ declarativa. Isso permite criar redes arbitrárias, que podem ser aplicadas com
 apenas um comando:
 
 \begin{lstlisting}[language=Python]
-project = get_project(SERVER, "pocpoc")
+server = Server("https://admin:icmc1234@gns3.m7.rs/v2")
+project = server.project("pocpoc")
 
-router1 = get_node(SERVER, project, "R1", {
+router0 = project.node("R0", {
     "compute_id": "local",
     "node_type": "dynamips",
-    "x": 0,
     "properties": {
         "platform": "c3745",
-        "image": "c3745-adventerprisek9-mz.124-25d.image",
         "nvram": 256,
-        "ram": 256, 
-        "slot0": "GT96100-FE",
-        "slot1": "NM-1FE-TX",
-        "slot2": "NM-4T",
-        "system_id": "FTX0945W0MY",
+        "image": "c3745-adventerprisek9-mz.124-25d.image",
         "startup_config_content": """
-            hostname ciclano
+            ipv6 unicast-routing
+            interface fastethernet 0/0
+                ipv6 enable
+                ipv6 address 2001:0:1::1/64
+                no shutdown
+            exit
         """,
     }
-}, destroy=True)
-start_node(SERVER, project, router1)
+})
+router0.start()
 
-router2 = get_node(SERVER, project, "R2", {
+alpine1 = project.node("alpine-linux-docker1", {
     "compute_id": "local",
-    "node_type": "dynamips",
-    "x": 100,
+    "node_type": "docker",
     "properties": {
-        "platform": "c3745",
-        "image": "c3745-adventerprisek9-mz.124-25d.image",
-        "nvram": 256,
-        "ram": 256, 
-        "slot0": "GT96100-FE",
-        "slot1": "NM-1FE-TX",
-        "slot2": "NM-4T",
-        "system_id": "FTX0945W0MY",
-        "startup_config_content": """
-            hostname fulano
-        """,
+        "image": "alpine",
+        "console_type": "telnet",
     }
-}, destroy=True)
-start_node(SERVER, project, router2)
+})
+alpine1.start()
+project.link_nodes(router0, 0, 0, alpine1, 0, 0)
 
-run_node_command(SERVER, project, router2, """
-    enable
-    conf t
-    hostname foobar
-    exit
-    exit
-""")
-
-link_nodes(SERVER, project, router1, router2)
+alpine2 = project.node("alpine-linux-docker2", {
+    "compute_id": "local",
+    "node_type": "docker",
+    "properties": {
+        "image": "alpine",
+        "console_type": "telnet",
+    }
+})
+alpine2.start()
+project.link_nodes(router0, 0, 1, alpine2, 0, 0)
 \end{lstlisting}
 
 \section{Resultados Preliminares}
