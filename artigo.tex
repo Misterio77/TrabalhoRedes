@@ -138,7 +138,11 @@ para mudanças parciais, apenas destruição+criação).
 
 É possível criar nós (como roteadores cisco, ou contêineres Linux), e rodar
 comandos via telnet, programaticamente. Isso permite criar redes arbitrárias,
-que podem ser aplicadas com apenas um comando:
+que podem ser aplicadas com apenas um comando.
+
+A prova de conceito completa inclui 3 roteadores em OSPF, e dois hosts Alpine
+Linux. Segue abaixo um exemplo de uso mais simples, com apenas 1 roteador e 2
+hosts:
 
 \begin{lstlisting}[language=Python]
 server = Server("https://admin:icmc1234@gns3.m7.rs/v2")
