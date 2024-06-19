@@ -4,83 +4,92 @@ import time
 
 TELNET_HOSTNAME = "celaeno"
 
-# Projects 
+class Server:
+    url = None
+    def __init__(self, url):
+        self.url = url
 
-def list_projects(server):
-    return requests.get(f"{server}/projects").json()
+    def get_project(self, name):
+        projects = requests.get(f"{self.url}/projects").json()
+        data = next((p for p in projects if p["name"] == name), None)
+        return Project(data, self.url)
 
-def get_project_by_name(server, name):
-    projects = list_projects(server)
-    return next((p for p in projects if p["name"] == name), None)
+    def create_project(self, name):
+        payload = {"name": name}
+        data = requests.post(f"{self.url}/projects", json=payload).json()
+        return Project(data, self.url)
 
-def create_project(server, name):
-    payload = {"name": name}
-    return requests.post(f"{server}/projects", json=payload).json()
+    def project(self, name):
+        project = self.get_project(name)
+        if not project:
+            project = self.create_project(name)
+        return project
 
-def get_project(server, name):
-    project = get_project_by_name(server, name)
-    if not project:
-        project = create_project(server, name)
-    return project
+class Project:
+    data = None
+    url = None
+    def __init__(self, data, server_url):
+        if data != None:
+            self.data = data
+            self.id = data["project_id"]
+            self.url = f"{server_url}/projects/{self.id}"
 
-# Nodes
+    def get_node(self, name):
+        nodes = requests.get(f"{self.url}/nodes").json()
+        data = next((n for n in nodes if n["name"] == name), None)
+        return Node(data, self.url)
 
-def list_nodes(server, project):
-    project_id = project["project_id"]
-    return requests.get(f"{server}/projects/{project_id}/nodes").json()
+    def create_node(self, name, payload):
+        payload["name"] = name
+        data = requests.post(f"{self.url}/nodes", json=payload).json()
+        return Node(data, self.url)
 
-def get_node_by_name(server, project, name):
-    nodes = list_nodes(server, project)
-    return next((n for n in nodes if n["name"] == name), None)
+    def node(self, name, payload, destroy=False):
+        node = self.get_node(name)
+        if destroy and node:
+            node.destroy()
+            node = None
+        if not node:
+            node = self.create_node(name, payload)
+        return node
 
-def create_node(server, project, name, payload):
-    payload["name"] = name
-    project_id = project["project_id"]
-    return requests.post(f"{server}/projects/{project_id}/nodes", json=payload).json()
+    def link_nodes(self, node1, adapter1, port1, node2, adapter2, port2):
+        return requests.post(f"{self.url}/links", json={
+            "nodes": [
+                {
+                    "node_id": node1.id,
+                    "adapter_number": adapter1,
+                    "port_number": port1,
+                },
+                {
+                    "node_id": node2.id,
+                    "adapter_number": adapter2,
+                    "port_number": port2,
+                }
+            ]
+        }).json()
 
-def get_node(server, project, name, payload, destroy=False):
-    node = get_node_by_name(server, project, name)
-    if destroy and node:
-        destroy_node(server, project, node)
-        node = None
-    if not node:
-        node = create_node(server, project, name, payload)
-    return node
+class Node:
+    data = None
+    url = None
+    def __init__(self, data, project_url):
+        if data != None:
+            self.data = data
+            self.id = data["node_id"]
+            self.url = f"{project_url}/nodes/{self.id}"
 
-def destroy_node(server, project, node):
-    project_id = project["project_id"]
-    node_id = node["node_id"]
-    requests.delete(f"{server}/projects/{project_id}/nodes/{node_id}")
+    def destroy(self):
+        if self.url:
+            requests.delete(self.url)
 
-def start_node(server, project, node):
-    project_id = project["project_id"]
-    node_id = node["node_id"]
-    return requests.post(f"{server}/projects/{project_id}/nodes/{node_id}/start").json()
+    def start(self):
+        return requests.post(f"{self.url}/start").json()
 
-def stop_node(server, project, node):
-    project_id = project["project_id"]
-    node_id = node["node_id"]
-    return requests.post(f"{server}/projects/{project_id}/nodes/{node_id}/stop").json()
+    def stop(self):
+        return requests.post(f"{self.url}/stop").json()
 
-def run_node_command(server, project, node, command):
-    with telnetlib.Telnet(TELNET_HOSTNAME, node["console"]) as session:
-        for line in command.splitlines():
-            session.write(line.encode())
-            session.write(b'\r\n')
-
-def link_nodes(server, project, node1, node1_int, node2, node2_int):
-    project_id = project["project_id"]
-    return requests.post(f"{server}/projects/{project_id}/links", json={
-        "nodes": [
-            {
-                "adapter_number": 0,
-                "port_number": node1_int,
-                "node_id": node1["node_id"],
-            },
-            {
-                "adapter_number": 0,
-                "port_number": node2_int,
-                "node_id": node2["node_id"],
-            }
-        ]
-    }).json()
+    def run_command(self, command):
+        with telnetlib.Telnet(TELNET_HOSTNAME, self.data["console"]) as session:
+            for line in command.splitlines():
+                session.write(line.encode())
+                session.write(b'\r\n')

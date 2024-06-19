@@ -1,10 +1,10 @@
-from common import get_node, get_project, start_node, run_node_command, link_nodes, create_node
+from common import Server
 
-SERVER = f"https://admin:icmc1234@gns3.m7.rs/v2"
+server = Server("https://admin:icmc1234@gns3.m7.rs/v2")
 
-project = get_project(SERVER, "pocpoc")
+project = server.project("pocpoc")
 
-router0 = get_node(SERVER, project, "R0", {
+router0 = project.node("R0", {
     "compute_id": "local",
     "node_type": "dynamips",
     "x": 0,
@@ -39,9 +39,9 @@ router0 = get_node(SERVER, project, "R0", {
         """,
     }
 }, destroy=True)
-start_node(SERVER, project, router0)
+router0.start()
 
-router1 = get_node(SERVER, project, "R1", {
+router1 = project.node("R1", {
     "compute_id": "local",
     "node_type": "dynamips",
     "x": -100,
@@ -76,9 +76,9 @@ router1 = get_node(SERVER, project, "R1", {
         """,
     }
 }, destroy=True)
-start_node(SERVER, project, router1)
+router1.start()
 
-router2 = get_node(SERVER, project, "R2", {
+router2 = project.node("R2", {
     "compute_id": "local",
     "node_type": "dynamips",
     "x": 100,
@@ -115,13 +115,12 @@ router2 = get_node(SERVER, project, "R2", {
         """,
     }
 }, destroy=True)
-start_node(SERVER, project, router2)
+router2.start()
 
-link_nodes(SERVER, project, router0, 0, router1, 0)
-link_nodes(SERVER, project, router0, 1, router2, 0)
+project.link_nodes(router0, 0, 0, router1, 0, 0)
+project.link_nodes(router0, 0, 1, router2, 0, 0)
 
-
-alpine1 = get_node(SERVER, project, "alpine-linux-docker1", {
+alpine1 = project.node("alpine-linux-docker1", {
     "compute_id": "local",
     "node_type": "docker",
     "x": -100,
@@ -131,10 +130,10 @@ alpine1 = get_node(SERVER, project, "alpine-linux-docker1", {
         "console_type": "telnet",
     }
 }, destroy=True)
-start_node(SERVER, project, alpine1)
-link_nodes(SERVER, project, router1, 1, alpine1, 0)
+alpine1.start()
+project.link_nodes(router1, 0, 1, alpine1, 0, 0)
 
-alpine2 = get_node(SERVER, project, "alpine-linux-docker2", {
+alpine2 = project.node("alpine-linux-docker2", {
     "compute_id": "local",
     "node_type": "docker",
     "x": 100,
@@ -144,10 +143,10 @@ alpine2 = get_node(SERVER, project, "alpine-linux-docker2", {
         "console_type": "telnet",
     }
 }, destroy=True)
-start_node(SERVER, project, alpine2)
-link_nodes(SERVER, project, router2, 1, alpine2, 0)
+alpine2.start()
+project.link_nodes(router2, 0, 1, alpine2, 0, 0)
 
-run_node_command(SERVER, project, router0, """
+router0.run_command("""
     enable
         configure terminal
             interface fastethernet 0/0
@@ -159,7 +158,7 @@ run_node_command(SERVER, project, router0, """
         exit
     exit
 """)
-run_node_command(SERVER, project, router1, """
+router1.run_command("""
     enable
         configure terminal
             interface fastethernet 0/0
@@ -171,7 +170,7 @@ run_node_command(SERVER, project, router1, """
         exit
     exit
 """)
-run_node_command(SERVER, project, router2, """
+router2.run_command("""
     enable
         configure terminal
             interface fastethernet 0/0

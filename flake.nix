@@ -17,7 +17,7 @@
         pname = "redes-projeto";
         version = self.lastModifiedDate;
         src = ./.;
-        buildInputs = [pkgs.texliveFull pkgs.pandoc];
+        buildInputs = [pkgs.texliveFull pkgs.pandoc (pkgs.python3.withPackages (p: [p.requests]))];
         buildPhase = ''
           latexmk
         '';
