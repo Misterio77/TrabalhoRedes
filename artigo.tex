@@ -96,6 +96,10 @@ Mininet\cite{mininet} e o GNS3\cite{gns3api}.
 
 Soll et. al\cite{soll2023building} também trabalharam montando laboratórios de ensino com IaC.
 
+Bromall et. al\cite{bromall2022comparison} compararam diferentes ferramentas para treinamento em IaC.
+
+Cosgrove et. al\cite{cosgrove2016teaching} falam sobre o ensino de SDN na graduação.
+
 
 
 \subsection{Prova de Conceito}
@@ -111,13 +115,13 @@ uma prova de conceito (PoC). Essa implementação é um código simples em Pytho
 que interage com o API do GNS3\cite{gns3api}.
 
 São expostas algumas funções que permitem gerir e configurar nós (e.g.
-roteadores). A implementação atual, apesar de declarativa, é rudimentar: é
-necessário destruir e recriar o nó a cada mudança, já que não há \textit{drift
-detection} implementado.
+roteadores). A implementação atual, apesar de rudimentar, é algo entre
+declarativa e imperativa. È necessário destruir e recriar o nó a cada mudança,
+já que não há \textit{drift detection} implementado.
 
-Dito isso, é possível criar nós, e rodar comandos via telnet, de forma
-declarativa. Isso permite criar redes arbitrárias, que podem ser aplicadas com
-apenas um comando:
+Dito isso, é possível criar nós, e rodar comandos via telnet,
+programaticamente. Isso permite criar redes arbitrárias, que podem ser
+aplicadas com apenas um comando:
 
 \begin{lstlisting}[language=Python]
 server = Server("https://admin:icmc1234@gns3.m7.rs/v2")
@@ -128,7 +132,6 @@ router0 = project.node("R0", {
     "node_type": "dynamips",
     "properties": {
         "platform": "c3745",
-        "nvram": 256,
         "image": "c3745-adventerprisek9-mz.124-25d.image",
         "startup_config_content": """
             ipv6 unicast-routing
@@ -186,7 +189,7 @@ tradicionais, e montar questionários para levantar vantagens e desvantagens, na
 visão dos alunos.
 
 O autor propõe um amadurecimento da PoC. Implementando um API ergonômico e,
-possivelmente, drift detection.
+possivelmente, drift detection, na biblioteca de Python.
 
 Para uma PoC ainda mais madura, o autor propõe a implementaçao de um
 \textit{Terraform provider} para interagir com o GNS3; permitindo colher as
